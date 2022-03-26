@@ -2,6 +2,8 @@
 
 package lesson1
 
+import java.io.File
+
 /**
  * Сортировка времён
  *
@@ -95,9 +97,27 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 24.7
  * 99.5
  * 121.3
+ *
+ * R = O(N)
+ * T = O(N*logN)
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val listOfTemp = mutableListOf<Double>() // R = O(N)
+    //трудоемкость O(N)
+    File(inputName).bufferedReader().use {
+        var s = it.readLine()
+        while (s != null) {
+            listOfTemp.add(s.toDouble())
+            s = it.readLine()
+        }
+    }
+    listOfTemp.sort() // трудоемкость sort() - O(N*logN)
+    File(outputName).bufferedWriter().use {
+        for (temp in listOfTemp) {
+            it.write(temp.toString())
+            it.newLine()
+        }
+    }
 }
 
 /**
@@ -128,9 +148,45 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  * 2
+ * R = O(N)
+ * T = O(N) - в каждом цикле проходимся только один раз
  */
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val lines = File(inputName).readLines() // R = O(N)
+    val output = File(outputName).bufferedWriter()
+    if (lines.isEmpty()) {
+        output.close()
+        return
+    }
+
+    val countOfNumber = mutableMapOf<Int, Int>() //R = O(N)
+    val listOfNumber = mutableListOf<Int>() //R = O(N)
+    for (el in lines) {
+        val num = el.toInt()
+        countOfNumber[num] = countOfNumber[num]?.plus(1) ?: 1
+        listOfNumber.add(num)
+    }
+
+    val maxCountOfNumber = countOfNumber.maxOf { it.value } // T = O(N)
+    val allNumberWithMaxCount = mutableListOf<Int>() //R = O(K), K - кол-во повторяющихся чисел
+    for ((key, value) in countOfNumber) {
+        if (value == maxCountOfNumber) allNumberWithMaxCount.add(key)
+    }
+
+    val minNumWithMaxCount = allNumberWithMaxCount.minOf { it } // T = O(N)
+    listOfNumber.removeAll { it == minNumWithMaxCount }
+    repeat(maxCountOfNumber) {
+        listOfNumber.add(minNumWithMaxCount)
+    }
+
+
+    for (num in listOfNumber) {
+        output.write(num.toString())
+        output.newLine()
+    }
+    output.close()
+
+
 }
 
 /**

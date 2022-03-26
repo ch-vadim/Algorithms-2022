@@ -93,9 +93,35 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * При сравнении подстрок, регистр символов *имеет* значение.
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
+ * R = O(N*M)
+ * t = O(N*M)
  */
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    val table = Array(first.length) { Array(second.length) { 0 } } // R = O(N*M)
+
+    for (i in first.indices) // T = O(N)
+        for (j in second.indices) // T = O(M)
+            if (first[i] == second[j])
+                if (i != 0 && j != 0)
+                    table[i][j] = table[i - 1][j - 1] + 1
+                else
+                    table[i][j] = 1
+
+    var maxLengthOfSub = 0
+    var endIndex = -1
+
+    for (i in first.indices) // T = O(N)
+        for (j in second.indices) // T = O(M)
+            if (table[i][j] > maxLengthOfSub) {
+                maxLengthOfSub = table[i][j]
+                endIndex = i
+            }
+
+    return if (endIndex != -1)
+        first.substring(endIndex - maxLengthOfSub + 1, endIndex + 1)
+    else ""
+
+
 }
 
 /**
@@ -107,7 +133,21 @@ fun longestCommonSubstring(first: String, second: String): String {
  *
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
+ * T = O(N*log(logN))
+ * R = O(N)
  */
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    if (limit <= 1) return 0
+
+    val numbers = BooleanArray(limit - 1) { true }
+
+    var i = 2
+    while (i * i <= limit) {
+        if (numbers[i - 2])
+            for (j in i * i..limit step i)
+                numbers[j - 2] = false
+        i++
+    }
+
+    return numbers.count { it }
 }
