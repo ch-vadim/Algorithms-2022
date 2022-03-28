@@ -99,22 +99,23 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  *
  * R = O(N)
- * T = O(N*logN)
+ * T = O(N)
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    val listOfTemp = mutableListOf<Double>() // R = O(N)
+    val listOfTemp = mutableListOf<Int>() // R = O(N)
     //трудоемкость O(N)
     File(inputName).bufferedReader().use {
         var s = it.readLine()
         while (s != null) {
-            listOfTemp.add(s.toDouble())
+            listOfTemp.add((s.toDouble() * 10.0 + 2730.0).toInt())
             s = it.readLine()
         }
     }
-    listOfTemp.sort() // трудоемкость sort() - O(N*logN)
+
+    val sortedTemp = countingSort(listOfTemp.toIntArray(), 7730) // countingSort() - T = O(N), R = O(N)
     File(outputName).bufferedWriter().use {
-        for (temp in listOfTemp) {
-            it.write(temp.toString())
+        for (temp in sortedTemp) {
+            it.write(((temp - 2730.0) / 10.0).toString())
             it.newLine()
         }
     }
@@ -152,41 +153,38 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * T = O(N) - в каждом цикле проходимся только один раз
  */
 fun sortSequence(inputName: String, outputName: String) {
-    val lines = File(inputName).readLines() // R = O(N)
-    val output = File(outputName).bufferedWriter()
-    if (lines.isEmpty()) {
-        output.close()
-        return
+    File(outputName).bufferedWriter().use { output ->
+        val lines = File(inputName).readLines() // R = O(N)
+        if (lines.isEmpty()) {
+            return
+        }
+
+        val countOfNumber = mutableMapOf<Int, Int>() //R = O(N)
+        val listOfNumber = mutableListOf<Int>() //R = O(N)
+        for (el in lines) {
+            val num = el.toInt()
+            countOfNumber[num] = countOfNumber[num]?.plus(1) ?: 1
+            listOfNumber.add(num)
+        }
+
+        val maxCountOfNumber = countOfNumber.maxOf { it.value } // T = O(N)
+        val allNumberWithMaxCount = mutableListOf<Int>() //R = O(K), K - кол-во повторяющихся чисел
+        for ((key, value) in countOfNumber) {
+            if (value == maxCountOfNumber) allNumberWithMaxCount.add(key)
+        }
+
+        val minNumWithMaxCount = allNumberWithMaxCount.minOf { it } // T = O(N)
+        listOfNumber.removeAll { it == minNumWithMaxCount }
+        repeat(maxCountOfNumber) {
+            listOfNumber.add(minNumWithMaxCount)
+        }
+
+
+        for (num in listOfNumber) {
+            output.write(num.toString())
+            output.newLine()
+        }
     }
-
-    val countOfNumber = mutableMapOf<Int, Int>() //R = O(N)
-    val listOfNumber = mutableListOf<Int>() //R = O(N)
-    for (el in lines) {
-        val num = el.toInt()
-        countOfNumber[num] = countOfNumber[num]?.plus(1) ?: 1
-        listOfNumber.add(num)
-    }
-
-    val maxCountOfNumber = countOfNumber.maxOf { it.value } // T = O(N)
-    val allNumberWithMaxCount = mutableListOf<Int>() //R = O(K), K - кол-во повторяющихся чисел
-    for ((key, value) in countOfNumber) {
-        if (value == maxCountOfNumber) allNumberWithMaxCount.add(key)
-    }
-
-    val minNumWithMaxCount = allNumberWithMaxCount.minOf { it } // T = O(N)
-    listOfNumber.removeAll { it == minNumWithMaxCount }
-    repeat(maxCountOfNumber) {
-        listOfNumber.add(minNumWithMaxCount)
-    }
-
-
-    for (num in listOfNumber) {
-        output.write(num.toString())
-        output.newLine()
-    }
-    output.close()
-
-
 }
 
 /**

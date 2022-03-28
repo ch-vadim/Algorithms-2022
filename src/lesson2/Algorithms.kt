@@ -97,7 +97,7 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * t = O(N*M)
  */
 fun longestCommonSubstring(first: String, second: String): String {
-    val table = Array(first.length) { Array(second.length) { 0 } } // R = O(N*M)
+    val table = Array(first.length) { IntArray(second.length) { 0 } } // R = O(N*M)
 
     for (i in first.indices) // T = O(N)
         for (j in second.indices) // T = O(M)
