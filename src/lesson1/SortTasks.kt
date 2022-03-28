@@ -155,9 +155,7 @@ fun sortTemperatures(inputName: String, outputName: String) {
 fun sortSequence(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use { output ->
         val lines = File(inputName).readLines() // R = O(N)
-        if (lines.isEmpty()) {
-            return
-        }
+        if (lines.isEmpty()) return
 
         val countOfNumber = mutableMapOf<Int, Int>() //R = O(N)
         val listOfNumber = mutableListOf<Int>() //R = O(N)
@@ -178,7 +176,6 @@ fun sortSequence(inputName: String, outputName: String) {
         repeat(maxCountOfNumber) {
             listOfNumber.add(minNumWithMaxCount)
         }
-
 
         for (num in listOfNumber) {
             output.write(num.toString())
