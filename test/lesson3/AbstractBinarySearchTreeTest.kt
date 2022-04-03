@@ -122,6 +122,9 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("Initial set: $controlSet")
             val binarySet = create()
+            assertFalse(
+                binarySet.remove(toRemove),
+                "An element was removed from empty tree")
             for (element in controlSet) {
                 binarySet += element
             }
@@ -175,6 +178,7 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("Control set: $controlSet")
             val binarySet = create()
+            assertFalse(binarySet.iterator().hasNext())
             assertFalse(
                 binarySet.iterator().hasNext(),
                 "Iterator of an empty tree should not have any next elements."
