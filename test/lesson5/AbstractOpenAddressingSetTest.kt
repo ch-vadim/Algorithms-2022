@@ -48,6 +48,10 @@ abstract class AbstractOpenAddressingSetTest {
             for (i in 1..50) {
                 val firstInt = random.nextInt(32)
                 val secondInt = firstInt + (1 shl bitsNumber)
+                assertFalse(
+                    openAddressingSet.remove(secondInt),
+                    "A removed element was not added."
+                )
                 openAddressingSet += secondInt
                 openAddressingSet += firstInt
                 val expectedSize = openAddressingSet.size - 1
@@ -110,6 +114,7 @@ abstract class AbstractOpenAddressingSetTest {
             while (openAddressingSetIter.hasNext()) {
                 controlSet.remove(openAddressingSetIter.next())
             }
+            assertFalse { controlSet.iterator().hasNext() }
             assertTrue(
                 controlSet.isEmpty(),
                 "OpenAddressingSetIterator doesn't traverse the entire set."
@@ -153,6 +158,9 @@ abstract class AbstractOpenAddressingSetTest {
                 if (element == toRemove) {
                     iterator.remove()
                 }
+            }
+            assertFailsWith<NoSuchElementException>("Something was supposedly returned after the last element") {
+                iterator.next()
             }
             assertEquals(
                 0, counter,

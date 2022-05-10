@@ -14,6 +14,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
 
     override var size: Int = 0
 
+    class Deleted
+
     /**
      * Индекс в таблице, начиная с которого следует искать данный элемент
      */
@@ -51,7 +53,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         val startingIndex = element.startingIndex()
         var index = startingIndex
         var current = storage[index]
-        while (current != null) {
+        while (current != null && current !is Deleted) {
             if (current == element) {
                 return false
             }
@@ -74,9 +76,24 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Спецификация: [java.util.Set.remove] (Ctrl+Click по remove)
      *
      * Средняя
+     * T = O(1) (O(N) в худшем случае)
+     * R = O(1)
      */
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        if (!this.contains(element)) return false
+        val startingIndex = element.startingIndex()
+        var index = startingIndex
+        var current = storage[index]
+        while (current != null && current !is Deleted) {
+            if (current == element) {
+                storage[index] = Deleted()
+                size--
+                return true
+            }
+            index = (index + 1) % capacity
+            current = storage[index]
+        }
+        return false
     }
 
     /**
@@ -89,7 +106,38 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя (сложная, если поддержан и remove тоже)
      */
-    override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+    override fun iterator(): MutableIterator<T> = OpenAddressingSetIterator()
+
+    private inner class OpenAddressingSetIterator : MutableIterator<T> {
+        var index = -1
+        var wasDeleted = true
+
+        // T = O(1) (O(N) в худшем случае)
+        // R = O(1)
+        override fun hasNext(): Boolean {
+            for (i in (index + 1) until storage.size)
+                if (storage[i] != null && storage[i] !is Deleted) return true
+            return false
+        }
+
+        // T = O(1) (O(N) в худшем случае)
+        // R = O(1)
+        override fun next(): T {
+            for (i in (index + 1) until storage.size)
+                if (storage[i] != null && storage[i] !is Deleted) {
+                    index = i
+                    wasDeleted = false
+                    return storage[i] as T
+                }
+            throw NoSuchElementException()
+        }
+
+        // T = O(1) (O(N) в худшем случае)
+        // R = O(1)
+        override fun remove() {
+            if (wasDeleted) throw IllegalStateException()
+            remove(storage[index])
+            wasDeleted = true
+        }
     }
 }

@@ -13,9 +13,34 @@ package lesson7
  * Если общей подпоследовательности нет, вернуть пустую строку.
  * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
  * При сравнении подстрок, регистр символов *имеет* значение.
+ * T = O(N*M)
+ * R = O(N*M)
  */
 fun longestCommonSubSequence(first: String, second: String): String {
-    TODO()
+    val table = Array(first.length + 1) { IntArray(second.length + 1) { 0 } }
+
+    for (i in first.indices) {
+        for (j in second.indices) {
+            if (first[i] == second[j]) table[i + 1][j + 1] = table[i][j] + 1
+            else table[i + 1][j + 1] = maxOf(table[i][j + 1], table[i + 1][j])
+        }
+    }
+
+    var i = first.length
+    var j = second.length
+    val answer = StringBuilder()
+    while (table[i][j] > 0) {
+        when {
+            table[i][j] == table[i - 1][j] -> i--
+            table[i][j] == table[i][j - 1] -> j--
+            else -> {
+                answer.append(first[i - 1])
+                i--
+                j--
+            }
+        }
+    }
+    return answer.reverse().toString()
 }
 
 /**
@@ -29,9 +54,36 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * Если самых длинных возрастающих подпоследовательностей несколько (как в примере),
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
+ * T = O(N^2)
+ * R = O(N)
  */
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
-    TODO()
+    if (list.isEmpty()) return emptyList()
+    val prev = Array(list.size) { -1 }
+    val d = Array(list.size) { 1 }
+    for (i in list.indices) {
+        for (j in 0 until i) {
+            if (list[j] < list[i] && d[j] + 1 > d[i]) {
+                d[i] = d[j] + 1
+                prev[i] = j
+            }
+        }
+    }
+
+    var position = 0
+    var lenght = d[0]
+    for (i in list.indices) {
+        if (d[i] > lenght) {
+            position = i
+            lenght = d[i]
+        }
+    }
+    val answer = mutableListOf<Int>()
+    while (position != -1) {
+        answer.add(0, list[position])
+        position = prev[position]
+    }
+    return answer
 }
 
 /**

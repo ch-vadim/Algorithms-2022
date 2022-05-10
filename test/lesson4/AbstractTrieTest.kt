@@ -96,6 +96,10 @@ abstract class AbstractTrieTest {
                     "Calling TrieIterator.hasNext() changes the state of the iterator."
                 )
             }
+            assertFalse(
+                iterator2.hasNext(),
+                "Iterators of the same set have different length."
+            )
             val trieIter = trieSet.iterator()
             println("Checking if the iterator traverses the entire set...")
             while (trieIter.hasNext()) {
