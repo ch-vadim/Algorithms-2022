@@ -59,29 +59,29 @@ fun longestCommonSubSequence(first: String, second: String): String {
  */
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
     if (list.isEmpty()) return emptyList()
-    val prev = Array(list.size) { -1 }
-    val d = Array(list.size) { 1 }
+    val previousElement = Array(list.size) { -1 }
+    val lengthOfSubSequence = Array(list.size) { 1 }
     for (i in list.indices) {
         for (j in 0 until i) {
-            if (list[j] < list[i] && d[j] + 1 > d[i]) {
-                d[i] = d[j] + 1
-                prev[i] = j
+            if (list[j] < list[i] && lengthOfSubSequence[j] + 1 > lengthOfSubSequence[i]) {
+                lengthOfSubSequence[i] = lengthOfSubSequence[j] + 1
+                previousElement[i] = j
             }
         }
     }
 
     var position = 0
-    var lenght = d[0]
+    var length = lengthOfSubSequence[0]
     for (i in list.indices) {
-        if (d[i] > lenght) {
+        if (lengthOfSubSequence[i] > length) {
             position = i
-            lenght = d[i]
+            length = lengthOfSubSequence[i]
         }
     }
     val answer = mutableListOf<Int>()
     while (position != -1) {
         answer.add(0, list[position])
-        position = prev[position]
+        position = previousElement[position]
     }
     return answer
 }
